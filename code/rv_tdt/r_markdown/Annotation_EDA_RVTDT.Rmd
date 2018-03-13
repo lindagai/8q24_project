@@ -1,0 +1,123 @@
+---
+title: "Annotation - EDA and RV TDT"
+author: "Linda Gai"
+date: "March 13, 2018"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+
+```{r cars}
+library(neato)
+```
+
+## Plot missingness of complete dataset
+
+```{r}
+filepath_annovar_report_updated_CADD<-"/Users/lindagai/Documents/classes/3rd year/3rd term/Margaret:Ingo/3:13 meeting/8q24_annovar_reports_CADD13.txt"
+
+annovar_report<-read.table(filepath_annovar_report_updated_CADD,sep="\t",quote ="",header=TRUE)
+colnames(annovar_report)
+#head(annovar_report)
+dim(annovar_report) #24165    12
+
+ggplot_missing(annovar_report[,10:12])
+
+```
+
+## Histograms of GWAVA, EIGEN, CADD1.3
+
+```{r}
+#Score cut-offs: 90th percentile
+eigen_90_quantile <- quantile(annovar_report$WG_EIGEN_score,na.rm=TRUE, probs = 0.9)[[1]]
+gwava_90_quantile <- quantile(annovar_report$WG_GWAVA_score, na.rm=TRUE, probs = 0.9)[[1]]
+cadd_90_quantile <- quantile(annovar_report$CADD13, na.rm=TRUE, probs = 0.9)[[1]]
+
+#Graph the GWAVA
+#gwava_90_quantile <- quantile(GWAVA_score_mat$WG_GWAVA_score, probs = 0.9)[[1]] #90th quantile = 0.44
+
+#plot.new()
+hist(as.numeric(annovar_report$WG_GWAVA_score),main="WG_GWAVA_score frequency",
+     xlab="GWAVA_score",ylab="Frequency",xlim=c(0,0.8))
+abline(v=gwava_90_quantile,col="red")
+
+#GWAVA score range
+#-1.4515  2.3631
+
+#Graph the EIGEN
+
+#eigen_90_quantile <- quantile(annovar_report$WG_EIGEN_score, probs = 0.9)[[1]] #90th quantile = 0.23
+
+hist_eigen<-hist(as.numeric(annovar_report$WG_EIGEN_score),main="WG_EIGEN_score frequency",
+                 xlab="EIGEN_score",ylab="Frequency",xlim=c(-1.5,2.5))
+abline(v=eigen_90_quantile,col="red")
+
+#Graph the CADD
+
+#cadd_90_quantile <- quantile(annovar_report$CADD13, probs = 0.9)[[1]] #90th quantile = 7.7207
+
+hist_cadd<-hist(as.numeric(annovar_report$CADD13),main="CADDv1.3 score frequency",
+                xlab="cadd_score",ylab="Frequency",xlim=c(0,20))
+abline(v=cadd_90_quantile,col="red")
+
+```
+
+## Filter to rows WITHOUT missing values in any row 
+
+```{r}
+
+annovar_report_no_missing<-annovar_report[(which(!is.na(annovar_report$CADD13) & !is.na(annovar_report$WG_GWAVA_score)) ),]
+dim(annovar_report_no_missing) #5074   12
+dim(annovar_report) #24165    12
+
+#annovar_report[which(is.na(annovar_report$WG_EIGEN_score))]
+
+#Don't need to check EIGEN score bc EIGEN available for all rows
+
+```
+
+## Score cut-offs: 90th percentile in dataset
+
+```{r}
+
+#Score cut-offs: 90th percentile
+eigen_90_quantile <- quantile(annovar_report_no_missing$WG_EIGEN_score, probs = 0.9)[[1]]
+gwava_90_quantile <- quantile(annovar_report_no_missing$WG_GWAVA_score, probs = 0.9)[[1]]
+cadd_90_quantile <- quantile(annovar_report_no_missing$CADD13, probs = 0.9)[[1]]
+
+#90th percentile CADD => 90th percentile GWAVA?
+GWAVA_90th<-rep(NA,nrow(annovar_report_no_missing))
+
+for (i in 9:nrow(annovar_report_no_missing)) {
+  if (annovar_report_no_missing$WG_GWAVA_score[i]> gwava_90_quantile){
+    GWAVA_90th[i] = 1
+  }
+}
+
+EIGEN_90th<-rep(NA,nrow(annovar_report_no_missing))
+
+for (i in 9:nrow(annovar_report_no_missing)){
+  if (annovar_report_no_missing$WG_EIGEN_score[i]> eigen_90_quantile){
+    EIGEN_90th[i] = 1
+  }
+}
+
+CADD13_90th<-rep(NA,nrow(annovar_report_no_missing))
+
+for (i in 9:nrow(annovar_report_no_missing)){
+  if (annovar_report_no_missing$CADD13[i]> cadd_90_quantile){
+    CADD13_90th[i] = 1
+  }
+}
+
+annovar_90th_percentile_indicator<-cbind(CADD13_90th,EIGEN_90th,GWAVA_90th)
+#title="Is the score greater than the 90th percentile in this dataset?"
+ggplot_missing(annovar_90th_percentile_indicator)
+
+
+```
+
+The graph above indicates whether a particular row has a CADD, EIGEN, or GWAVA score above the 90th percentile. Black indicates that the score is above the the 90th percentile.
