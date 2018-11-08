@@ -1,0 +1,99 @@
+---
+title: "Trio analysis for common and rare variants"
+author:
+- name: Linda Gai
+  affiliation: Johns Hopkins School of Public Health
+  email: lindagai@jhu.edu
+output:
+  BiocStyle::html_document
+abstract: |
+  Workflow for trio analysis for common and rare variants.
+vignette: |
+  %\VignetteIndexEntry{Vignette Title}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+# Introduction
+(Relate RV TDT to Bioconductor.)
+
+Here, we walk through a variant trio analysis workflow in R, using packages from Bioconductor and RV TDT. We first start with raw VCF files, and show how to reformat the files into the appropriate shape for rare variants analysis. We then perform transmission disequilibrium tests for common variants using the trio package, and walk through a few tools for rare variant trio analysis: RV TDT, RV-TDT, and Trio SVM. We then show how to filter the rare variants sets into more informative variant sets, using annotation and position information, to increase power of the statistical tests. Finally, we outline a few methods for plotting the results using gViz. 
+
+We use case-parent trios of cleft palate data from Kids First as an example. (More description)
+
+# Introduction to RV trio analysis using RV TDT
+
+## Installation of RV TDT
+
+RV-TDT can be installed and run on Linux and Mac OS. Download or clone the source code from the github here:
+
+Run the following shell commands:
+
+```{r}
+```
+
+An executable file /rvTDT/ will be compiled in the current folder.
+
+To run RV TDT from R, enter the following command:
+
+```{r}
+```
+
+Note that RVTDT cannot create .
+
+## Experimental data set
+
+# Getting VCF files into trio format
+
+## Cleaning
+## Checking for Mendelian errors
+## Checking that all IDs match
+## Formatting
+
+# Common variants analysis
+## Trio TDT methods
+## Exploratory data analysis
+
+# Rare variants analysis
+## Filtering methods
+### Filter by annotation
+One way to enrich signal is to filter the variant set to probable causal variants, using annotation information. The easiest way to to do this is to download annotation information from 
+
+### Filter by position
+Another option to enrich signal is to adjust the window size.
+
+<!-- #1. Read in phased vcf file -->
+
+<!-- #2. Subset vcf files depending on annotation information (CADD, eigen, gwava) -->
+<!-- #i.e., subset to list of positions in AnnoVar that satisfy score cut-offs -->
+<!-- #TODO: -->
+<!-- #i. Obtain additional scores for 8q24 region: e.g. SIFT, PolyPhen etc. -->
+<!-- #ii. Use existing VariantAnnotation functions e.g. locateVariant and predictCoding to filter -->
+
+<!-- #3. Get vcf file into RV TDT format -->
+<!-- #i. trio ped format -> phen file -->
+<!-- #TODO: change this so it converts raw plink -> phen file directly -->
+<!-- #ii. vcf -> tped file -->
+<!-- #ii. vcf -> map file -->
+
+
+## RV TDT methods
+## Exploratory data analysis
+
+# Other analysis methods for rare variant trios
+## RV-TDT
+## Trio SVM
+## ScanTrio?
+## RVTESTS?
+
+# Visualization
+## GViz
+## snp.plotter
+## LocusZoom
+
+# Concluding remarks
+## Packages
+
+```{r sessionInfo, echo=FALSE}
+sessionInfo()
+```
