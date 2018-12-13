@@ -40,7 +40,7 @@ geno(vcf)$GT[geno(vcf)$GT == "."]<-"./."
 # Remove tri-allelic SNPS/duplicate sites
 vcf2<-vcf[-(which(start(rowRanges(vcf)) %in% start(rowRanges(vcf))[duplicated(start(rowRanges(vcf)))])),]
 
-#Remove individuals with extra Mendelian errors
+#Remove individuals with Mendelian errors
 #TODO: Fix this txt file, it shouldn't have an x in it
 filepath_ids_with_mend_errors<-"/users/lgai/8q24_project/data/raw_data/vcfs/ids_with_mend_errors.txt"
 pids.with.mendelian.errors<-unlist(read.table(filepath_ids_with_mend_errors,skip=1,stringsAsFactors = FALSE),use.names = FALSE)

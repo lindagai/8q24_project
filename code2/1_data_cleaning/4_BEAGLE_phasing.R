@@ -1,13 +1,3 @@
-#Description: 
-#Sections
-
-#Author: Linda Gai
-#Last update: 12/12/18
-
-#TO DO: Clean up code to get rid of cruft
-
-##########################################################
-
 #Sign into cluster
 ssh -X lgai@jhpce01.jhsph.edu 
 
