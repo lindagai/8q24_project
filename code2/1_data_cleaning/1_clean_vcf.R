@@ -6,13 +6,12 @@
 #2. Delete:
 #  tri-allelic calls
 #  duplicated SNPs
-#  half-missing calls
 
 #Inputs:
 #Outputs:
 
 #Author: Linda Gai
-#Last update: 12/7/18
+#Last update: 12/12/18
 
 ################################################################################
 
@@ -70,10 +69,34 @@ write.table(snp.pos, filepath.vcf.snp.pos, row.names=FALSE,quote=FALSE)
 
 ################################################################################
 
+#Scratch is below
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 #For Trio, you will need to filter to MAF > 0.01 or MAF > 0.05
 chr8_geno_filt<-removeSNPs(chr8_geno, maf=0.01, perc.na =0.1)
 
 ################################################################################
+
+
+
+
+
+
+
+
+
 
 #Other considerations?
 

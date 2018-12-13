@@ -28,6 +28,8 @@
 
 #6. TODO: Add visualization
 
+#NOTE: ~400 SNPS max seems to be what RV-TDT can handle.
+
 #Author: Linda Gai
 #Last update: 7/14/18
 
@@ -45,105 +47,6 @@ library(dplyr)
 ################################################################################
 
 #Before running the commands in this file, run functions.R.
-
-############################# 0. Filter vcf ##########################
-
-#i. Find positions you want
-#Get function for selecting the criterion you want to filter by
-#Writes out list of positions which can then be used to filter the vcf
-
-#Get ANNOVAR report for 8q24 region with updated CADD scores
-filepath.annovar<-"/users/lgai/8q24_project/data/processed_data/annotation/8q24_annovar_reports_CADD13.txt"
-
-#90th percentile values from exploratory analysis of 8q24
-#cadd<-7.09
-#gwava<-0.45
-#eigen<-0.22685
-
-#CADD: suggested minimum cut-off
-cadd<-10
-
-#Obtain SNP positions with cadd, eigen, and gwava scores above 90th percentile of 8q24
-positions.cadd.filtered.10<-filter.snps.with.annotation(filepath.annotation=filepath.annovar,cadd)
-length(positions.cadd.filtered.10)
-positions.cadd.filtered.10[1:10]
-
-#GWAVA: 90th percentile
-gwava<-0.45
-
-positions.gwava.filtered.10<-filter.snps.with.annotation(filepath.annotation=filepath.annovar,gwava)
-length(positions.gwava.filtered.10)
-positions.gwava.filtered.10[1:10]
-
-#eigen: 90th percentile
-eigen<-0.22685
-
-positions.eigen.filtered.10<-filter.snps.with.annotation(filepath.annotation=filepath.annovar,eigen)
-length(positions.eigen.filtered.10)
-positions.eigen.filtered.10[1:10]
-
-#ii. Filter the vcf to the selected positions
-#Currently using:
-#CADD filtered
-filepath.vcf<-"/users/lgai/2_5_2018_RVTDT/8q24.recode.FILTERED.FILTERED2.BEAGLE.vcf.gz"
-
-#Read in selected positions
-#To recreate the results using 90th percentile cut-off for CADD scores:
-filepath_caddscore_positions_90th<-"/users/lgai/8q24_project/data/processed_data/annotation/caddscore_90th_percentile_positions_for_vcf.txt"
-caddscore_positions_90th<-read.table(filepath_caddscore_positions_90th,header=TRUE)
-head(caddscore_positions_90th)
-vcf.geno<-filter.vcf.to.selected.pos(caddscore_positions_90th$Position,filepath.vcf)
-
-#Not using 
-vcf.geno<-filter.vcf.to.selected.pos(positions.cadd.filtered.10,filepath.vcf)
-#vcf.geno[1:5,1:5]
-dim(vcf.geno)
-#810 981
-
-#########
-
-#GWAVA 90th percentile filtered
-vcf.geno<-filter.vcf.to.selected.pos(positions.gwava.filtered.10,filepath.vcf)
-#vcf.geno[1:5,1:5]
-dim(vcf.geno)
-#11380   981
-positions<-rownames(vcf.geno)
-
-#########
-
-#EIGEN 90th percentile filtered
-
-vcf.geno<-filter.vcf.to.selected.pos(positions.eigen.filtered.10,filepath.vcf)
-#vcf.geno[1:5,1:5]
-dim(vcf.geno)
-#12011   981
-
-############################# 0.5. Filter to windows ##########################
-
-#i. window containing all variants around peak in gTDT
-#Estimate: 
-129750000
-129875000-130000000
-
-#Using positions from 90th percentile CADD
-#peak.positions<-positions[positions > 129875000 && positions > 130000000]
-positions<-caddscore_positions_90th$Position
-length(positions)
-
-peak.positions<-positions[positions > 129875000 & positions < 130000000]
-12500
-length(peak.positions)
-151
-
-100, 100 (overlapping windows)
-75, 76 (non-overlapping windows) (of a different size, though)
-
-#Filter to CADD score > 10 and within peak
-vcf.geno<-filter.vcf.to.selected.pos(peak.positions,filepath.vcf)
-
-#ii. windows of 100 variants around peak in gTDT, non-overlapping
-#iii. windows of 100 variants of all variants in 8q24 region, non-overlapping
-#iv. windows of 100 variants of 
 
 ######################## 1. Get tped ############################################
 
@@ -541,3 +444,106 @@ system(paste0("./rvTDT ", reg, "-", k, "-real", currCadd,
               "_map_forRVTDTSim.txt --adapt 100 --alpha 0.00001 --permut 1000 -u 0.01"))
 
 ################################################################################
+
+
+
+# Scratch
+
+############################# 0. Filter vcf ##########################
+
+#i. Find positions you want
+#Get function for selecting the criterion you want to filter by
+#Writes out list of positions which can then be used to filter the vcf
+
+#Get ANNOVAR report for 8q24 region with updated CADD scores
+filepath.annovar<-"/users/lgai/8q24_project/data/processed_data/annotation/8q24_annovar_reports_CADD13.txt"
+
+#90th percentile values from exploratory analysis of 8q24
+#cadd<-7.09
+#gwava<-0.45
+#eigen<-0.22685
+
+#CADD: suggested minimum cut-off
+cadd<-10
+
+#Obtain SNP positions with cadd, eigen, and gwava scores above 90th percentile of 8q24
+positions.cadd.filtered.10<-filter.snps.with.annotation(filepath.annotation=filepath.annovar,cadd)
+length(positions.cadd.filtered.10)
+positions.cadd.filtered.10[1:10]
+
+#GWAVA: 90th percentile
+gwava<-0.45
+
+positions.gwava.filtered.10<-filter.snps.with.annotation(filepath.annotation=filepath.annovar,gwava)
+length(positions.gwava.filtered.10)
+positions.gwava.filtered.10[1:10]
+
+#eigen: 90th percentile
+eigen<-0.22685
+
+positions.eigen.filtered.10<-filter.snps.with.annotation(filepath.annotation=filepath.annovar,eigen)
+length(positions.eigen.filtered.10)
+positions.eigen.filtered.10[1:10]
+
+#ii. Filter the vcf to the selected positions
+#Currently using:
+#CADD filtered
+filepath.vcf<-"/users/lgai/2_5_2018_RVTDT/8q24.recode.FILTERED.FILTERED2.BEAGLE.vcf.gz"
+
+#Read in selected positions
+#To recreate the results using 90th percentile cut-off for CADD scores:
+filepath_caddscore_positions_90th<-"/users/lgai/8q24_project/data/processed_data/annotation/caddscore_90th_percentile_positions_for_vcf.txt"
+caddscore_positions_90th<-read.table(filepath_caddscore_positions_90th,header=TRUE)
+head(caddscore_positions_90th)
+vcf.geno<-filter.vcf.to.selected.pos(caddscore_positions_90th$Position,filepath.vcf)
+
+#Not using 
+vcf.geno<-filter.vcf.to.selected.pos(positions.cadd.filtered.10,filepath.vcf)
+#vcf.geno[1:5,1:5]
+dim(vcf.geno)
+#810 981
+
+#########
+
+#GWAVA 90th percentile filtered
+vcf.geno<-filter.vcf.to.selected.pos(positions.gwava.filtered.10,filepath.vcf)
+#vcf.geno[1:5,1:5]
+dim(vcf.geno)
+#11380   981
+positions<-rownames(vcf.geno)
+
+#########
+
+#EIGEN 90th percentile filtered
+
+vcf.geno<-filter.vcf.to.selected.pos(positions.eigen.filtered.10,filepath.vcf)
+#vcf.geno[1:5,1:5]
+dim(vcf.geno)
+#12011   981
+
+############################# 0.5. Filter to windows ##########################
+
+#i. window containing all variants around peak in gTDT
+#Estimate: 
+129750000
+129875000-130000000
+
+#Using positions from 90th percentile CADD
+#peak.positions<-positions[positions > 129875000 && positions > 130000000]
+positions<-caddscore_positions_90th$Position
+length(positions)
+
+peak.positions<-positions[positions > 129875000 & positions < 130000000]
+12500
+length(peak.positions)
+151
+
+100, 100 (overlapping windows)
+75, 76 (non-overlapping windows) (of a different size, though)
+
+#Filter to CADD score > 10 and within peak
+vcf.geno<-filter.vcf.to.selected.pos(peak.positions,filepath.vcf)
+
+#ii. windows of 100 variants around peak in gTDT, non-overlapping
+#iii. windows of 100 variants of all variants in 8q24 region, non-overlapping
+#iv. windows of 100 variants of 
