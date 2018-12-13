@@ -14,7 +14,7 @@ library(VariantAnnotation)
 
 ################# Filter geno matrix #########################
 
-#A. Subset Annovar report to find the appropriate positions
+#A. Subset Annovar report to find positions with allele frequency information
 
 filepath.sm.annovar<-"/users/lgai/8q24_project/data/processed_data/annotation/8q24_annovar_report_useful_variables.txt"
 
@@ -32,39 +32,27 @@ head(annovar)
 dim(annovar)
 annovar.filt<-annovar %>%
   filter(!is.na(Afalt_1000g2015aug_eur)) %>%
-  filter(TotalDepth>20) %>%
-  filter(StartPosition > 129875000 & StartPosition < 130000000)
-  filter(CADDgt20 > 10 | WG_GWAVA_score > 0.4 | WG_EIGEN_score > 4) #%>%
+  filter(TotalDepth>20)
 
-dim(annovar.filt)
-head(annovar.filt)
-range(annovar.filt$StartPosition)
+#B. Subset ANNOVAR based on functional annotation/TDT peak location/both/divide into windows.
+
+#TODO: This could be coded more coded more efficiently
+annovar.filt.peak <- annovar.filt %>%
+  filter(StartPosition > 129875000 & StartPosition < 130000000)
 
 pos<-annovar.filt$StartPosition
-length(pos) #1048
 
-#B. Filter vcf to these positions
+annovar.filt.functional <- annovar.filt %>%
+  filter(CADDgt20 > 10 | WG_GWAVA_score > 0.4 | WG_EIGEN_score > 4)
+
+annovar.filt.both <- annovar.filt 
+
+#C. Filter vcf to these positions
 #TODO: Change this so it doesn't have to be unzipped
 
-
 filepath.vcf<-"/users/lgai/8q24_project/data/processed_data/vcfs/8q24.cleaned.phased.vcf"
-hg.assembly<-"hg19"
-vcf <- readVcf(filepath.vcf,hg.assembly)
-
-length(which(start(rowRanges(vcf)) %in% pos)) #869
-
-#Filter vcf to relevant positions
-vcf2<-vcf[which(start(rowRanges(vcf)) %in% pos),]
-vcf2
-geno(vcf2)$GT
-
-#Change BEAGLE4.0's output to vcf style
-geno(vcf)$GT<-apply(geno(vcf)$GT,2,function(x)gsub('\\|','/',x))
-geno(vcf)$GT<-apply(geno(vcf)$GT,2,function(x)gsub('1/0','0/1',x))
-
-#Save vcf so you can transform it to BEAGLE v3 format for ScanTrio
 filepath.filtered.vcf<-"/users/lgai/8q24_project/data/processed_data/vcfs/filtered_by_annotation/8q24.cleaned.phased.annotation.filtered.vcf"
-writeVcf(vcf2,filepath.filtered.vcf)
+hg.assembly<-"hg19"
 
 #C. Convert filtered, phased vcf to geno matrix
 
@@ -72,6 +60,16 @@ filepath.filtered.vcf<-"/users/lgai/8q24_project/data/processed_data/vcfs/filter
 filepath.ped<-"/users/lgai/8q24_project/data/processed_data/gmkf_euro_completetrios_ids_match_vcf_mend_errors_removed.txt"
 filepath.geno<-"/users/lgai/8q24_project/data/processed_data/geno_matrix/geno.phased.rds"
 hg.assembly<-"hg19"
+
+###########################################
+
+get.subsetted.vcf<-function(filepath.annovar,filepath.vcf,filepath.filtered.vcf,hg.assembly){
+  vcf <- readVcf(filepath.filtered.vcf,hg.assembly)
+  geno(vcf)$GT<-apply(geno(vcf)$GT,2,function(x)gsub('\\|','/',x))
+  geno(vcf)$GT<-apply(geno(vcf)$GT,2,function(x)gsub('1/0','0/1',x))
+  vcf<-vcf[which(start(rowRanges(vcf)) %in% pos),]
+  writeVcf(vcf,filepath.filtered.vcf)
+}
 
 get.geno<-function(filepath.ped,filepath.filtered.vcf,filepath.geno,hg.assembly){
   vcf <- readVcf(filepath.filtered.vcf,hg.assembly)
@@ -89,9 +87,49 @@ get.geno<-function(filepath.ped,filepath.filtered.vcf,filepath.geno,hg.assembly)
 
 
 
+
+
+
+
+
 # Scratch
 
 ###########################################
+
+vcf <- readVcf(filepath.vcf,hg.assembly)
+
+#Change BEAGLE4.0's output to vcf style
+geno(vcf)$GT<-apply(geno(vcf)$GT,2,function(x)gsub('\\|','/',x))
+geno(vcf)$GT<-apply(geno(vcf)$GT,2,function(x)gsub('1/0','0/1',x))
+
+length(which(start(rowRanges(vcf)) %in% pos)) #869
+
+#Filter vcf to relevant positions
+vcf2<-vcf[which(start(rowRanges(vcf)) %in% pos),]
+vcf2
+geno(vcf2)$GT
+
+#Save vcf so you can transform it to BEAGLE v3 format for ScanTrio
+writeVcf(vcf2,filepath.filtered.vcf)
+
+
+###
+
+
+vcf <- readVcf(filepath.filtered.vcf,hg.assembly)
+ped<-read.table(filepath.ped,header=TRUE)
+geno <- vcf2geno(vcf,ped)
+saveRDS(geno, filepath.geno) 
+
+
+###########################################
+
+get.geno<-function(filepath.ped,filepath.filtered.vcf,filepath.geno,hg.assembly){
+  vcf <- readVcf(filepath.filtered.vcf,hg.assembly)
+  ped<-read.table(filepath.ped,header=TRUE)
+  geno <- vcf2geno(vcf,ped)
+  saveRDS(geno, filepath.geno) 
+}
 
 directory.name<-"filtered_by_annotation"
 typeofdata<-"vcfs"

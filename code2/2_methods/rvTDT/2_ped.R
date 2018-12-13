@@ -10,11 +10,6 @@ get.rvTDT.ped.from.trio.geno <-function(geno){
 
 #1. Convert trio geno matrix to rvTDT ped format
 
-#TODO:Fix this later
-# geno<-load("/Users/lindagai 1/Documents/classes/3rd year/3rd term/Margaret:Ingo/2:2 update/chr8_geno_filt_12_06_2017.rda")
-# geno<-chr8_geno_filt
-# rm(chr8_geno_filt)
-
 #should be:
 filepath.geno<-"/users/lgai/8q24_project/data/processed_data/geno_matrix/geno.phased.rds"
 geno<-readRDS(filepath.geno)
