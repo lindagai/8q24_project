@@ -11,20 +11,38 @@ library(dplyr)
 
 ################################
 
-get.evs<-function(filepath.annovar,filepath.evs){
+get.evs<-function(filepath.annovar,filepath.evs,filepath.geno){
+  filepath.annovar
   
   annovar<-read.table(filepath.annovar,sep="\t",header=TRUE, quote ="")
+  annovar
   
-  evs.raw<-annovar%>%
+  evs.raw<-annovar %>%
     mutate(geno0 = (1-Afalt_1000g2015aug_eur)^2 + 0.0000001) %>%
     mutate(geno1 = (1-Afalt_1000g2015aug_eur)*Afalt_1000g2015aug_eur + 0.0000001)  %>%
     mutate(geno2 = (Afalt_1000g2015aug_eur)^2*10000 + 0.0000001)  %>%
-    select("StartPosition",
+    dplyr::select("StartPosition",
            "geno2",
            "geno1",
            "geno0",
            "TotalDepth"
     )
+  evs.raw[1:5,1:5]
+  
+  ################
+  #Get positions in geno matrix
+  # #TODO: Do this more efficiently :/
+  filepath.geno.annotation <- "/users/lgai/8q24_project/data/processed_data/geno_matrix/filtered/geno_phased_annotation.rds"
+  geno<-readRDS(filepath.geno)
+  snps<-colnames(geno) 
+  
+  filepath.vcf.snp.pos<-"/users/lgai/8q24_project/data/processed_data/vcf_snp_pos.txt"
+  vcf.snp.pos<-read.table(filepath.vcf.snp.pos,sep="\t",quote ="",header=TRUE)
+  head(vcf.snp.pos)
+  pos<-vcf.snp.pos[vcf.snp.pos$snp %in% snps,"pos"]
+  ################
+
+  evs<-evs.raw[evs.raw$StartPosition %in% pos,]
   write.table(evs.raw, filepath.evs, sep="\t",row.names = FALSE,quote = FALSE)
 }
 
@@ -40,10 +58,17 @@ filepath.evs.peak<-"/users/lgai/8q24_project/data/processed_data/rvTDT/evs/evs.p
 filepath.evs.both<-"/users/lgai/8q24_project/data/processed_data/rvTDT/evs/evs.both.txt"
 evs.filepaths<-c(filepath.evs.annotation,filepath.evs.peak,filepath.evs.both)
 
+filepath.filtered.vcf.annotation<-"/users/lgai/8q24_project/data/processed_data/vcfs/filtered_by_annotation/8q24.cleaned.phased.filtered.annotation.vcf"
+filepath.filtered.vcf.peak<-"/users/lgai/8q24_project/data/processed_data/vcfs/filtered_by_annotation/8q24.cleaned.phased.filtered.peak.vcf"
+filepath.filtered.vcf.both<-"/users/lgai/8q24_project/data/processed_data/vcfs/filtered_by_annotation/8q24.cleaned.phased.filtered.annotation.peak.vcf"
+vcf.filepaths<-c(filepath.filtered.vcf.annotation,filepath.filtered.vcf.peak,filepath.filtered.vcf.both)
+
+
 for (i in 1:3){
   filepath.annovar<-annovar.filt.filepaths[i]
   filepath.evs<-evs.filepaths[i]
-  get.evs(filepath.annovar,filepath.evs)
+  filepath.evs<-vcf.filepaths[i]
+  get.evs(filepath.annovar,filepath.evs,filepath.vcf)
 }
 
 ##############################
@@ -68,6 +93,9 @@ for (i in 1:3){
 
 
 
+# vcf<-readVcf(filepath.vcf,"hg19")
+# pos<- start(rowRanges(vcf))
+# pos
 
 
 
@@ -75,8 +103,17 @@ for (i in 1:3){
 
 
 
+> ## Return all 'fixed' fields, "LAF" from 'info' and "GT" from 'geno'
+  filepath<-"/users/lgai/8q24_project/data/processed_data/vcfs/filtered_by_annotation/8q24.cleaned.phased.filtered.annotation.vcf"
+fl <- system.file(file=filepath, package="VariantAnnotation")
+svp <- ScanVcfParam(rowRanges="start")
+vcf1 <- readVcf(filepath, "hg19", svp)
+names(geno(vcf1))  
 
-
+> ## Return all 'fixed' fields, "LAF" from 'info' and "GT" from 'geno'
+  > svp <- ScanVcfParam(info="LDAF", geno="GT")
+> vcf1 <- readVcf(fl, "hg19", svp)
+> names(geno(vcf1))
 
 
 

@@ -27,16 +27,19 @@ get.rvTDT.ped<-function(filepath.geno,filepath.rvTDT.ped){
 
 #Additional geno matrices
 #filepath.geno<-"/users/lgai/8q24_project/data/processed_data/geno_matrix/geno.phased.rds"
-filepath.geno.annotation <- "/users/lgai/8q24_project/data/processed_data/geno_matrix/filtered/geno.phased.annotation.rds"
-filepath.geno.peak <-"/users/lgai/8q24_project/data/processed_data/geno_matrix/filtered/geno.phased.peak.rds"
-filepath.geno.both <-"/users/lgai/8q24_project/data/processed_data/geno_matrix/filtered/geno.phased.annotation.peak.rds"
+filepath.geno.annotation <- "/users/lgai/8q24_project/data/processed_data/geno_matrix/filtered/geno_phased_annotation.rds"
+filepath.geno.peak <-"/users/lgai/8q24_project/data/processed_data/geno_matrix/filtered/geno_phased_peak.rds"
+filepath.geno.both <-"/users/lgai/8q24_project/data/processed_data/geno_matrix/filtered/geno_phased_both.rds"
 geno.filepaths<-c(filepath.geno.annotation,filepath.geno.peak,filepath.geno.both)
+geno.filepaths
 
 #filepath.rvTDT.ped<-"/users/lgai/8q24_project/data/processed_data/rvTDT/ped/rvTDT_ped.txt"
 filepath.rvTDT.ped.annotation<-"/users/lgai/8q24_project/data/processed_data/rvTDT/ped/rvTDT_ped_annotation.txt"
 filepath.rvTDT.ped.peak<-"/users/lgai/8q24_project/data/processed_data/rvTDT/ped/rvTDT_ped_peak.txt"
 filepath.rvTDT.ped.both<-"/users/lgai/8q24_project/data/processed_data/rvTDT/ped/rvTDT_ped_both.txt"
 rvTDT.ped.filepaths<-c(filepath.rvTDT.ped.annotation,filepath.rvTDT.ped.peak,filepath.rvTDT.ped.both)
+
+rvTDT.ped.filepaths
 
 i<-1
 

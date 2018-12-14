@@ -14,6 +14,7 @@ library(VariantAnnotation)
 
 ###########################################
 
+#TODO: Edit this so we also remove the monomorphic SNPs from the vcf
 get.subsetted.vcf<-function(filepath.annovar,filepath.vcf,filepath.filtered.vcf,hg.assembly){
   filepath.annovar
   annovar<-read.table(filepath.annovar,sep="\t",header=TRUE, quote ="")
@@ -23,7 +24,6 @@ get.subsetted.vcf<-function(filepath.annovar,filepath.vcf,filepath.filtered.vcf,
   geno(vcf)$GT<-apply(geno(vcf)$GT,2,function(x)gsub('\\|','/',x))
   geno(vcf)$GT<-apply(geno(vcf)$GT,2,function(x)gsub('1/0','0/1',x))
   vcf<-vcf[which(start(rowRanges(vcf)) %in% pos),]
-
   
   writeVcf(vcf,filepath.filtered.vcf)
 }
@@ -93,9 +93,9 @@ filtered.vcf.filepaths
 
 filepath.ped<-"/users/lgai/8q24_project/data/processed_data/gmkf_euro_completetrios_ids_match_vcf_mend_errors_removed.txt"
 
-filepath.geno.annotation <- "/users/lgai/8q24_project/data/processed_data/geno_matrix/filtered/geno.phased.annotation.rds"
-filepath.geno.peak <-"/users/lgai/8q24_project/data/processed_data/geno_matrix/filtered/geno.phased.peak.rds"
-filepath.geno.both <-"/users/lgai/8q24_project/data/processed_data/geno_matrix/filtered/geno.phased.annotation.peak.rds"
+filepath.geno.annotation <- "/users/lgai/8q24_project/data/processed_data/geno_matrix/filtered/geno_phased_annotation.rds"
+filepath.geno.peak <-"/users/lgai/8q24_project/data/processed_data/geno_matrix/filtered/geno_phased_peak.rds"
+filepath.geno.both <-"/users/lgai/8q24_project/data/processed_data/geno_matrix/filtered/geno_phased_both.rds"
 
 filtered.geno.filepaths<-c(filepath.geno.annotation,filepath.geno.peak,filepath.geno.both)
 filtered.geno.filepaths
@@ -103,7 +103,6 @@ filtered.geno.filepaths
 hg.assembly<-"hg19"
 
 #Obtain the filtered vcfs and geno matrices
-i<-1
 
 for (i in 1:3){
   filepath.annovar<-annovar.filt.filepaths[i]

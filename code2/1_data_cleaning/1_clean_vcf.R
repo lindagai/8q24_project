@@ -32,6 +32,22 @@ filepath.vcf<-"/dcl01/beaty/data/gmkf/euro/vcfs/filtered/8q24.recode.vcf"
 hg.assembly<-"hg19"
 vcf <- readVcf(filepath.vcf,hg.assembly)
 
+###################### create table of IDs and positions in the vcf  ##########################
+
+pos<-start(rowRanges(vcf))
+snp <- names(rowRanges(vcf))
+snp.pos<-cbind(snp,pos)
+
+#Remove duplicated rows
+snp.pos<-snp.pos[!duplicated(snp.pos),]
+head(snp.pos)
+
+#Save
+filepath.vcf.snp.pos<-"/users/lgai/8q24_project/data/processed_data/vcf_snp_pos.txt"
+write.table(snp.pos, filepath.vcf.snp.pos, sep="\t", row.names=FALSE,quote=FALSE)
+
+################################################################################
+
 table(geno(vcf)$GT)
 
 #Convert missing values into correct format for BEAGLE
@@ -53,19 +69,6 @@ vcf3
 
 filepath.filtered.vcf<-"/users/lgai/8q24_project/data/processed_data/vcfs/8q24.cleaned.vcf"
 writeVcf(vcf3,filepath.filtered.vcf)
-
-###################### create table of IDs and positions in the vcf  ##########################
-
-pos<-start(rowRanges(chr8_vcf))
-snp <- names(rowRanges(chr8_vcf))
-snp.pos<-cbind(snp,pos)
-
-#Remove duplicated rows
-snp.pos<-snp.pos[!duplicated(snp.pos),]
-
-#Save
-filepath.vcf.snp.pos<-"/users/lgai/8q24_project/data/processed_data/vcf.snp.pos.txt"
-write.table(snp.pos, filepath.vcf.snp.pos, row.names=FALSE,quote=FALSE)
 
 ################################################################################
 

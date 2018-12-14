@@ -15,8 +15,8 @@ library(rvTDT)
 get.rvTDT.results<-function(filepath.rvTDT.ped,filepath.evs,filepath.rvTDT.results){
   evs<-read.table(filepath.evs,sep="\t",quote ="",header=TRUE,stringsAsFactors=FALSE)
   rvTDT.ped<-read.table(filepath.rvTDT.ped,sep="\t",quote ="",header=TRUE,stringsAsFactors=FALSE)
-  dim(rvTDT.ped) #981 4402...should be 1048
-  dim(evs) #1048 is correct
+  dim(rvTDT.ped) #981 848...should be 1048
+  dim(evs) #1048 is correct ??119   5
   apply(evs, 2, function(x) any(is.na(x)))
   apply(rvTDT.ped, 2, function(x) any(is.na(x)))
   
@@ -51,7 +51,9 @@ for (i in 1:3){
   filepath.rvTDT.ped<-rvTDT.ped.filepaths[i]
   filepath.rvTDT.ped
   filepath.evs<-evs.filepaths[i]
+  filepath.evs
   filepath.rvTDT.results<-rvTDT.results[i]
+  filepath.rvTDT.results
   
   get.rvTDT.results(filepath.rvTDT.ped,filepath.evs,filepath.rvTDT.results)
 
