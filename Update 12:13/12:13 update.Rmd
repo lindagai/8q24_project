@@ -7,8 +7,12 @@ output:
   pdf_document: default
 ---
 
-```{r setup, include=FALSE}
+```{r setup, include=FALSE, message=FALSE,warning=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
+```
+```{r, message=FALSE,warning=FALSE}
+library(dplyr)
+library(ggplot2)
 ```
 
 ## R Markdown
@@ -34,9 +38,25 @@ The ultimate goal was to run all 3 tests on the same datasets to compare results
 ### 1. Filtered by functional annotation information (1048 SNPs)
 I filtered to SNPs with scores (in the ANNOVAR report) of CADD > 10, GWAVA > 0.4, EIGEN >4, using recommended cut-offs from literature, or, in the case of EIGEN, a cut-off used in at least one paper. I used these scores because the other annotation scores (SIFT, PolyPhen) were completely missing from the ANNOVAR report. Unfortunately, there was high degree of missingness in each of the scores, so this approach may have excluded some posibly causal SNPs if no annotation score was available for them.
 
-The positions that have been kept have been labeled red in the gTDT plot below.
-```{r}
+```{r, echo=FALSE,message=FALSE,warning=FALSE}
+filepath_genotypic_tdt_results<-"/Users/lindagai 1/Documents/classes/4th year/Research/8q24_project/Update 12:13/8q24_genotypic_tdt_results.txt"
+genotypic_tdt_results<-read.table(filepath_genotypic_tdt_results,header=TRUE)
 
+filepath.annovar<-"/Users/lindagai 1/Documents/classes/4th year/Research/8q24_project/Update 12:13/8q24_annovar_report_functional_annnotation.txt"
+annovar<-read.table(filepath.annovar,sep="\t",header=TRUE, quote ="")
+pos.annotation<-annovar$StartPosition
+
+genotypic_tdt_results <- genotypic_tdt_results %>%
+  mutate(annot.pos = (position %in% pos.annotation)) %>%
+  mutate(peak.pos = (position > 129875000 & position < 130000000)) %>%
+  mutate(both.pos = (position > 129875000 & position < 130000000) & (position %in% pos.annotation) )
+```
+
+```{r,message=FALSE,warning=FALSE}
+ggplot(genotypic_tdt_results)+
+  geom_point(aes(x=position,y=neglogp,color=annot.pos)) +
+  labs(title="Genotypic TDT results, high annotation score positions labeled green",
+       x="SNP position", y = "-logp")
 ```
 
 ### 2. Filtered to region with peak TDT signal (679 SNPs)
@@ -44,20 +64,49 @@ The positions that have been kept have been labeled red in the gTDT plot below.
 The positions that have been kept have been labeled red in the gTDT plot below.
 Score ranges for .
 
+```{r}
+ggplot(genotypic_tdt_results)+
+  geom_point(aes(x=position,y=neglogp,color=peak.pos)) +
+  labs(title="Genotypic TDT results, peak positions labeled green",
+       x="SNP position", y = "-logp")
+```
+
 ### 3. Both 1 and 2 (119 SNPs)
 
 The positions that have been kept have been labeled red in the gTDT plot below.
 
 The results for the 3 tests (rvTDT, RV-TDT, and ScanTrio are given below):
 
+```{r}
+ggplot(genotypic_tdt_results)+
+  geom_point(aes(x=position,y=neglogp,color=both.pos)) +
+  labs(title="Genotypic TDT results, high annotation score positions in peak labeled green",
+       x="SNP position", y = "-logp")
+```
+
+Other types of filtering to try:
+
+1. Filtering to high gTDT signal positions? There does not seem to much concordance between having a high annotation score and high gTDT signal, and some higher signal positions lie outside the peak.
+
+2. Filtering to only rare variants of MAF <0.05 in 1000 genomes? in the dataset?
+Is there correlation between high functional annotation scores and variant rarity?
+
+3. Filtering to smaller windows -- I've only tried filtering to relatively large windows (76-100 SNPs) using RV-TDT.
+
 ## Results
+```{r,echo=FALSE}
+filepath.rvTDT.annotation<-"/users/lgai/8q24_project/data/processed_data/rvTDT/rvTDT_results_annotation.rds"
+filepath.rvTDT.peak<-"/users/lgai/8q24_project/data/processed_data/rvTDT/rvTDT_results_peak.rds"
+filepath.rvTDT.both<-"/users/lgai/8q24_project/data/processed_data/rvTDT/rvTDT_results_both.rds"
+rvTDT.results<-c(filepath.rvTDT.annotation,filepath.rvTDT.peak,filepath.rvTDT.both)
+```
 
 ### 1. Filtered by functional annotation information (CADD > 10, GWAVA > 0.4, EIGEN >4, using literature) using cut-offs (1048 SNPs)
 
 #### rvTDT
 
 ```{r}
-summary(cars)
+readRDS(rvTDT.results[1])
 ```
 
 
@@ -65,7 +114,7 @@ summary(cars)
 #### RV-TDT
 
 ```{r}
-summary(cars)
+
 ```
 
 
@@ -73,7 +122,7 @@ summary(cars)
 #### ScanTrio
 
 ```{r}
-summary(cars)
+
 ```
 
 
@@ -83,19 +132,19 @@ summary(cars)
 #### rvTDT
 
 ```{r}
-summary(cars)
+readRDS(rvTDT.results[2])
 ```
 
 #### RV-TDT
 
 ```{r}
-summary(cars)
+
 ```
 
 #### ScanTrio
 
 ```{r}
-summary(cars)
+
 ```
 
 Interpretation:
@@ -105,29 +154,56 @@ Interpretation:
 #### rvTDT
 
 ```{r}
-summary(cars)
+readRDS(rvTDT.results[3])
 ```
 
 #### RV-TDT
 
 ```{r}
-summary(cars)
+
 ```
 
 #### ScanTrio
 
 ```{r}
-summary(cars)
+
 ```
 
 Interpretation:
 
 
-##### Previous results
+#### RV-TDT: windows of size 100, filtered to CADD>10, in peak and in whole region
 
-I also tried using windows and filtering on RV-TDT over the summer. I first filtered to all positions with a CADD score >10, the recommended minimum cut-off, and then used relatively large windows of 76 or 100 SNPs, with either no overlap or a 10 SNP overlap.
+I also tried using windows and filtering on RV-TDT over the summer. I first filtered to all positions with a CADD score >10, since that annotation score had the most non-missing entries in the region. I then used relatively large windows of 76 or 100 SNPs, with either no overlap or a 10 SNP overlap.
 
-Overall, it did not seem like there
+
+##### Overall findings; highest signal is possibly outside of the peak
+Overall, it seems like the SNPs that were the 600-800th SNPs (by position) in the dataset, out of ~1000 had the lowest-p-values. My guess is that these SNPs are possibly around but not necessarily in the peak -- when I ran RV-TDT on the peak, the p-values were considerably greater in the 600-800th SNPs group than in the peak. However, I would need to plot the 600th-800th positions on the gTDT to confirm this.
+ 
+##### P-values differed widely based on weighting scheme in region
+The p-values differed quite a lot between the different weighting schemes. 
+
+##### Lowest p-value method used indicator of whether parent transmitted a RV, association between RV carrier status and phenotype
+CMC-Analytical and CMC-Haplo gave relatively low p-values for this region (0.16-0.4). The CMC statistics are the simplest, and just use an indicator variable to indicate whether the parent has rare variants and tests for the association between phenotype and rare variant carrier status. So it seems probable/possible that there is some variant in the 600-800th SNP region that might be associated with cleft phenotype, although the test did not reach significance.
+
+##### Highest p-value methods were weighted by the number of (or variance in the number of) variants transmitted per parent
+Conversely, BRV-Haplo, VT-BRV-Haplo, and WSS-Haplo gave relatively higher p-values (~0.5-0.75). BRV counts the number of rare variants transmitted, WSS weights each variant site by the number of variants in the parental haplotypes that are not transmitted in the parental off-spring, and VT maximizes the test statistic over the allele frequencies. 
+
+##### QUESTION/TODO: Does this imply that, of the rare variants transmitted, only a small number are associated with the phenotype? Or that an individual that transmitted an associated rare variant transmitted only a few rare variants?
+
+##### One method that gave a low and high p-value maximizes test statistic over allele frequencies
+The VT-CMC-Haplo gave a fairly high p-value for the 600th-700th SNPs (~0.75) but a relatively low p-value for the 700-800th SNPs (~0.3). 
+
+##### QUESTION/TODO: How to interpret the information in light of the fact that VT maximizes the test statistic over the allele frequencies? Does this imply that there may be an ?
+
+##### P-values within peak relatively high
+The highest signal in the peak was in the first half of the peak (76 SNPs, p \approx 0.5). But again, the signal was higher in the 600-800th SNPs.
+
+TODO: 
+
+1. Plot the position of the 600-800th SNPs group on the gTDT dataset.
+
+2. Make the below tables easier to read :)
 
 Results are here:
 
