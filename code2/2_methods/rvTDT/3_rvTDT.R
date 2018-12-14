@@ -15,13 +15,11 @@ library(rvTDT)
 get.rvTDT.results<-function(filepath.rvTDT.ped,filepath.evs,filepath.rvTDT.results){
   evs<-read.table(filepath.evs,sep="\t",quote ="",header=TRUE,stringsAsFactors=FALSE)
   rvTDT.ped<-read.table(filepath.rvTDT.ped,sep="\t",quote ="",header=TRUE,stringsAsFactors=FALSE)
-  dim(rvTDT.ped) #981 848...should be 1048
-  dim(evs) #1048 is correct ??119   5
-  apply(evs, 2, function(x) any(is.na(x)))
-  apply(rvTDT.ped, 2, function(x) any(is.na(x)))
-  
-  evs[1:5,1:4]
-  rvTDT.ped[1:5,1:5]
+  # dim(rvTDT.ped) 
+  # dim(evs)
+  # 
+  # evs[1:5,1:4]
+  # rvTDT.ped[1:5,1:5]
   
   rvTDT.results <- rvTDT(rvTDT.ped,evs,maf.threshold=1)
   saveRDS(rvTDT.results, file=filepath.rvTDT.results)
@@ -45,7 +43,7 @@ filepath.rvTDT.peak<-"/users/lgai/8q24_project/data/processed_data/rvTDT/rvTDT_r
 filepath.rvTDT.both<-"/users/lgai/8q24_project/data/processed_data/rvTDT/rvTDT_results_both.rds"
 rvTDT.results<-c(filepath.rvTDT.annotation,filepath.rvTDT.peak,filepath.rvTDT.both)
 
-i<-1
+#i<-1
 
 for (i in 1:3){
   filepath.rvTDT.ped<-rvTDT.ped.filepaths[i]
@@ -59,7 +57,9 @@ for (i in 1:3){
 
 }
 
-readRDS(filepath.rvTDT.results)
+readRDS(rvTDT.results[1])
+readRDS(rvTDT.results[2])
+readRDS(rvTDT.results[3])
 
 ##############################
 
