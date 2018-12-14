@@ -106,7 +106,25 @@ rvTDT.results<-c(filepath.rvTDT.annotation,filepath.rvTDT.peak,filepath.rvTDT.bo
 
 #### rvTDT
 
-So far, I only have results for rvTDT. Generally, it seems like .
+So far, for these three filtering approaches, I only have results for rvTDT. Interestingly, it seems like the p-values for the SNPs in the peak are slightly *higher* than the p-values for the SNPs in the peak that were ALSO filtered by annotation information.
+
+QUESTION: Might this indicate that some associated/potentially causal SNPs are being filtered out because of the annotation scores? (Many SNPs have missing annotation scores, or else they might just not have high ones.)
+
+The p-values from the gTDTs using kernels also tend to be lower than the gTDTs using linear combinations, with the kernels weighted by the population controls giving the lowest p-values of all.
+
+KEY:
+
+* p_lc_1: p-value from gTDT w/unweighted linear combination of SNPs
+
+* p_lc_maf: p-value from gTDTw/linear combination of SNPs, weighted by MAF
+
+* p_lc_pc: p-value from gTDT w/linear combination of SNPs, weighted by MAF
+
+* p_k_1: p-value from gTDT w/unweighted kernel SNPs, weighted by population controls (i.e MAF in the population)
+
+* p_k_maf: p-value from gTDT w/kernel of SNPs, weighted by MAF
+
+* p_k_pc: p-value from gTDT w/kernel of SNPs, weighted by by population controls (i.e MAF in the population)
 
 #### 1. Filtered by functional annotation information (CADD > 10, GWAVA > 0.4, EIGEN >4, using literature) using cut-offs
 
@@ -129,59 +147,24 @@ unlist(readRDS(rvTDT.results[2]))
 unlist(readRDS(rvTDT.results[3]))
 ```
 
+## Alternative Filtering approach
+
+#### Windows of size 100, filtered to CADD>10, overlap of 0 and 10, in peak and in whole region
 
 #### RV-TDT
 
-```{r}
+Over the summer, I also tried using windows and filtering on RV-TDT. I first filtered to all positions with a CADD score >10, since that annotation score had the most non-missing entries in the region. I then used relatively large windows of 76 or 100 SNPs, with either no overlap or a 10 SNP overlap between the windows.
 
-```
-
-
-
-#### ScanTrio
-
-```{r}
-
-```
-
-
-
-#### RV-TDT
-
-```{r}
-
-```
-
-#### ScanTrio
-
-```{r}
-
-```
-
-Interpretation:
-
-#### RV-TDT
-
-```{r}
-
-```
-
-#### ScanTrio
-
-```{r}
-
-```
-
-Interpretation:
-
-
-#### RV-TDT: windows of size 100, filtered to CADD>10, in peak and in whole region
-
-I also tried using windows and filtering on RV-TDT over the summer. I first filtered to all positions with a CADD score >10, since that annotation score had the most non-missing entries in the region. I then used relatively large windows of 76 or 100 SNPs, with either no overlap or a 10 SNP overlap.
-
+#### Results
 
 ##### Overall findings; highest signal is possibly outside of the peak
 Overall, it seems like the SNPs that were the 600-800th SNPs (by position) in the dataset, out of ~1000 had the lowest-p-values. My guess is that these SNPs are possibly around but not necessarily in the peak -- when I ran RV-TDT on the peak, the p-values were considerably greater in the 600-800th SNPs group than in the peak. However, I would need to plot the 600th-800th positions on the gTDT to confirm this.
+
+Adding overlaps changed the p-values somewhat. The 2 smallest p-values in the overlap data set were 0.11 and 0.2 (SNPs ~540-630, 630-720), compared to 0.25 and 0.13 in the non-overlap data set (SNPs 600-700,700-800).
+
+There was also an additional region in both the overlap and non-overlap datasets that had a slightly lower p-value (0.6-0.7). In the the non-overlap dataset, the last 100 SNPs have a slightly lower p-values (~0.6 using CMC-Analytical and BRV-Haplo, ~0.7-0.8 for the rest), and the second-to-last 100 SNPs also have slightly lower p-values (~0.6-7 using VT-BRV-Haplo, T-CMC-Haplo, WSS-Haplo, ~1 for the others).
+
+
  
 ##### P-values differed widely based on weighting scheme in region
 The p-values differed quite a lot between the different weighting schemes. 
@@ -192,12 +175,12 @@ CMC-Analytical and CMC-Haplo gave relatively low p-values for this region (0.16-
 ##### Highest p-value methods were weighted by the number of (or variance in the number of) variants transmitted per parent
 Conversely, BRV-Haplo, VT-BRV-Haplo, and WSS-Haplo gave relatively higher p-values (~0.5-0.75). BRV counts the number of rare variants transmitted, WSS weights each variant site by the number of variants in the parental haplotypes that are not transmitted in the parental off-spring, and VT maximizes the test statistic over the allele frequencies. 
 
-##### QUESTION/TODO: Does this imply that, of the rare variants transmitted, only a small number are associated with the phenotype? Or that an individual that transmitted an associated rare variant transmitted only a few rare variants?
+##### QUESTION/TODO: Does this imply that, of the rare variants transmitted, only a small number are associated with the phenotype? Or that parents that transmitted an associated rare variant transmitted only a few rare variants?
 
 ##### One method that gave a low and high p-value maximizes test statistic over allele frequencies
 The VT-CMC-Haplo gave a fairly high p-value for the 600th-700th SNPs (~0.75) but a relatively low p-value for the 700-800th SNPs (~0.3). 
 
-##### QUESTION/TODO: How to interpret the information in light of the fact that VT maximizes the test statistic over the allele frequencies? Does this imply that there may be an ?
+##### QUESTION/TODO: How to interpret the information in light of the fact that VT maximizes the test statistic over the allele frequencies? VT is implemented using CMC, so I think the low p-value probably comes from the CMC part, rather than the VT part...the CMC-Analytical p-value (0.13) is quite a lot lower than the VT-CMC (~0.3)
 
 ##### P-values within peak relatively high
 The highest signal in the peak was in the first half of the peak (76 SNPs, p \approx 0.5). But again, the signal was higher in the 600-800th SNPs.
@@ -292,4 +275,10 @@ for (i in 1:2){
   cat("\n")
   cat("\n")
 }
+```
+
+The graphs of the 2 regions in 8q24 with the lowest p-values are given below:
+
+```{r,echo=FALSE}
+
 ```
