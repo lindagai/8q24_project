@@ -14,7 +14,7 @@ library(VariantAnnotation)
 
 ###########################################
 
-#TODO: Edit this so we also remove the monomorphic SNPs from the vcf
+
 get.subsetted.vcf<-function(filepath.annovar,filepath.vcf,filepath.filtered.vcf,hg.assembly){
   filepath.annovar
   annovar<-read.table(filepath.annovar,sep="\t",header=TRUE, quote ="")
@@ -23,6 +23,9 @@ get.subsetted.vcf<-function(filepath.annovar,filepath.vcf,filepath.filtered.vcf,
   vcf <- readVcf(filepath.vcf,hg.assembly)
   geno(vcf)$GT<-apply(geno(vcf)$GT,2,function(x)gsub('\\|','/',x))
   geno(vcf)$GT<-apply(geno(vcf)$GT,2,function(x)gsub('1/0','0/1',x))
+  
+  #TODO: remove the monomorphic SNPs from the vcf #########
+  
   vcf<-vcf[which(start(rowRanges(vcf)) %in% pos),]
   
   writeVcf(vcf,filepath.filtered.vcf)
