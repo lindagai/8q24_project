@@ -59,6 +59,10 @@ library(dplyr)
 #tped[1:5,1:10]
 #dim(tped) #810 1963
 
+filepath.vcf<-"/users/lgai/2_5_2018_RVTDT/8q24.recode.FILTERED.FILTERED2.BEAGLE.vcf.gz"
+vcf<-readVcf(filepath.vcf)
+vcf.geno<-geno(vcf)$GT
+
 filepath.tped<-"~/cadd_10/cadd_10_peak.tped"
 get.tped(vcf.geno,filepath.tped)
 
@@ -171,7 +175,7 @@ get.rvtdt.files.in.windows(window.size,overlap=0,filepath.tped,filepath.map,file
 
 ########################### 5. Run RV TDT ##############################################
 
-#Whole 8q24 region, 10 overlap, 100 SNPs
+#Whole 8q24 region, no overlap, 100 SNPs
 for (i in 1:9){
         rv.tdt.dir<-"./rv-tdt/rvTDT "
         work.dir <- "cd /users/lgai/"

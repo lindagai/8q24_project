@@ -33,6 +33,7 @@ get.evs<-function(filepath.annovar,filepath.evs,filepath.geno){
   
   #Get positions in geno matrix
   # #TODO: Do this more efficiently :/
+  #You can remove this code after the monomorphic SNPs are removed from the vcf
   geno<-readRDS(filepath.geno)
   snps<-colnames(geno) 
   

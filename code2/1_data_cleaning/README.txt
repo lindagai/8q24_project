@@ -37,6 +37,5 @@ Filters the phased file in 3 ways:
 1. Filtered by functional annotation information (CADD/GWAVA/EIGEN) using cut-offs (1048 SNPs)
 2. Filtered to peak TDT signal (679 SNPs)
 3. Both 1 and 2 (119 SNPs)
-4. Functional annotation information, with window size 100
 
 and outputs a trio geno txt file (for RV-TDT, rvTDT) and a vcf file (for ScanTrio).
