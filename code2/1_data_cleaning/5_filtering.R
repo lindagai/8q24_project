@@ -12,62 +12,17 @@ library(dplyr)
 library(trio)
 library(VariantAnnotation)
 
-################# Filter geno matrix #########################
-
-#A. Subset Annovar report to find positions with allele frequency information
-
-filepath.sm.annovar<-"/users/lgai/8q24_project/data/processed_data/annotation/8q24_annovar_report_useful_variables.txt"
-
-annovar<-read.table(filepath.sm.annovar,sep="\t",header=TRUE, quote ="")
-
-#TODO: Choose filters
-# filterrules:
-
-# Window size
-# Window overlap size
-
-window.size<-100
-
-head(annovar)
-dim(annovar)
-annovar.filt<-annovar %>%
-  filter(!is.na(Afalt_1000g2015aug_eur)) %>%
-  filter(TotalDepth>20)
-
-#B. Subset ANNOVAR based on functional annotation/TDT peak location/both/divide into windows.
-
-#TODO: This could be coded more coded more efficiently
-annovar.filt.peak <- annovar.filt %>%
-  filter(StartPosition > 129875000 & StartPosition < 130000000)
-
-pos<-annovar.filt$StartPosition
-
-annovar.filt.functional <- annovar.filt %>%
-  filter(CADDgt20 > 10 | WG_GWAVA_score > 0.4 | WG_EIGEN_score > 4)
-
-annovar.filt.both <- annovar.filt 
-
-#C. Filter vcf to these positions
-#TODO: Change this so it doesn't have to be unzipped
-
-filepath.vcf<-"/users/lgai/8q24_project/data/processed_data/vcfs/8q24.cleaned.phased.vcf"
-filepath.filtered.vcf<-"/users/lgai/8q24_project/data/processed_data/vcfs/filtered_by_annotation/8q24.cleaned.phased.annotation.filtered.vcf"
-hg.assembly<-"hg19"
-
-#C. Convert filtered, phased vcf to geno matrix
-
-filepath.filtered.vcf<-"/users/lgai/8q24_project/data/processed_data/vcfs/filtered_by_annotation/8q24.cleaned.phased.annotation.filtered.vcf"
-filepath.ped<-"/users/lgai/8q24_project/data/processed_data/gmkf_euro_completetrios_ids_match_vcf_mend_errors_removed.txt"
-filepath.geno<-"/users/lgai/8q24_project/data/processed_data/geno_matrix/geno.phased.rds"
-hg.assembly<-"hg19"
-
 ###########################################
 
 get.subsetted.vcf<-function(filepath.annovar,filepath.vcf,filepath.filtered.vcf,hg.assembly){
-  vcf <- readVcf(filepath.filtered.vcf,hg.assembly)
+  annovar<-read.table(filepath.annovar,sep="\t",header=TRUE, quote ="")
+  pos<-annovar.filt$StartPosition
+  
+  vcf <- readVcf(filepath.vcf,hg.assembly)
   geno(vcf)$GT<-apply(geno(vcf)$GT,2,function(x)gsub('\\|','/',x))
   geno(vcf)$GT<-apply(geno(vcf)$GT,2,function(x)gsub('1/0','0/1',x))
   vcf<-vcf[which(start(rowRanges(vcf)) %in% pos),]
+  
   writeVcf(vcf,filepath.filtered.vcf)
 }
 
@@ -80,8 +35,77 @@ get.geno<-function(filepath.ped,filepath.filtered.vcf,filepath.geno,hg.assembly)
 
 ###########################################
 
+################# Choose filtering #########################
 
+#TODO: Add in more functions
 
+#A. Subset Annovar report to find positions with allele frequency information for rvTDT
+
+filepath.sm.annovar<-"/users/lgai/8q24_project/data/processed_data/annotation/8q24_annovar_report_useful_variables.txt"
+
+annovar<-read.table(filepath.sm.annovar,sep="\t",header=TRUE, quote ="")
+
+annovar.filt<-annovar %>%
+  filter(!is.na(Afalt_1000g2015aug_eur)) %>%
+  filter(TotalDepth>20)
+
+dim(annovar.filt)
+
+#B. Subset ANNOVAR based on functional annotation/TDT peak location/both/divide into windows.
+annovar.filt.annotation <- annovar.filt %>%
+  filter(CADDgt20 > 10 | WG_GWAVA_score > 0.4 | WG_EIGEN_score > 4)
+filepath.annovar.filt.annotation<-"/users/lgai/8q24_project/data/processed_data/annotation/filtered_annovar/8q24_annovar_report_functional_annnotation.txt"
+write.table(annovar.filt.annotation, filepath.annovar.filt.annotation, sep="\t",row.names = FALSE,quote = FALSE)
+
+annovar.filt.peak <- annovar.filt %>%
+  filter(StartPosition > 129875000 & StartPosition < 130000000)
+filepath.annovar.filt.peak<-"/users/lgai/8q24_project/data/processed_data/annotation/filtered_annovar/8q24_annovar_report_TDT_peak.txt"
+write.table(annovar.filt.peak, filepath.annovar.filt.peak, sep="\t",row.names = FALSE,quote = FALSE)
+
+annovar.filt.both <- annovar.filt %>%
+  filter(CADDgt20 > 10 | WG_GWAVA_score > 0.4 | WG_EIGEN_score > 4) %>%
+  filter(StartPosition > 129875000 & StartPosition < 130000000)
+filepath.annovar.filt.both<-"/users/lgai/8q24_project/data/processed_data/annotation/filtered_annovar/8q24_annovar_report_filtered_by_both.txt"
+write.table(annovar.filt.both, filepath.annovar.filt.both, sep="\t",row.names = FALSE,quote = FALSE)
+
+annovar.filt.filepaths<-c(filepath.annovar.filt.annotation,filepath.annovar.filt.peak,filepath.annovar.filt.both)
+
+#C. Filter vcf to these positions
+#TODO: Change this so it doesn't have to be unzipped
+
+#filepath.vcf<-"/users/lgai/8q24_project/data/processed_data/vcfs/8q24.cleaned.phased.vcf"
+filepath.filtered.vcf.annotation<-"/users/lgai/8q24_project/data/processed_data/vcfs/filtered_by_annotation/8q24.cleaned.phased.filtered.annotation.vcf"
+filepath.filtered.vcf.peak<-"/users/lgai/8q24_project/data/processed_data/vcfs/filtered_by_annotation/8q24.cleaned.phased.filtered.peak.vcf"
+filepath.filtered.vcf.both<-"/users/lgai/8q24_project/data/processed_data/vcfs/filtered_by_annotation/8q24.cleaned.phased.filtered.annotation.peak.vcf"
+hg.assembly<-"hg19"
+
+filtered.vcf.filepaths<-c(filepath.filtered.vcf.annotation,filepath.filtered.vcf.peak,filepath.filtered.vcf.both)
+filtered.vcf.filepaths
+
+#C. Convert filtered, phased vcf to geno matrix
+
+#filepath.filtered.vcf<-"/users/lgai/8q24_project/data/processed_data/vcfs/filtered_by_annotation/8q24.cleaned.phased.annotation.filtered.vcf"
+#filepath.ped<-"/users/lgai/8q24_project/data/processed_data/gmkf_euro_completetrios_ids_match_vcf_mend_errors_removed.txt"
+filepath.geno.annotation <- "/users/lgai/8q24_project/data/processed_data/geno_matrix/filtered/geno.phased.annotation.rds"
+filepath.geno.peak <-"/users/lgai/8q24_project/data/processed_data/geno_matrix/filtered/geno.phased.peak.rds"
+filepath.geno.both <-"/users/lgai/8q24_project/data/processed_data/geno_matrix/filtered/geno.phased.annotation.peak.rds"
+
+filtered.geno.filepaths<-c(filepath.geno.annotation,filepath.geno.peak,filepath.geno.both)
+filtered.geno.filepaths
+hg.assembly<-"hg19"
+
+#Obtain the filtered vcfs and geno matrices
+
+for (i in 1:3){
+  filepath.annovar<-annovar.filt.filepaths[i]
+  filepath.filtered.vcf<-filtered.vcf.filepaths[i]
+  filepath.filtered.geno<-filtered.geno.filepaths[i]
+  
+  get.subsetted.vcf(filepath.annovar,filepath.vcf,filepath.filtered.vcf,hg.assembly)
+  get.geno(filepath.ped,filepath.filtered.vcf,filepath.filtered.geno,hg.assembly)
+}
+
+###########################################
 
 
 

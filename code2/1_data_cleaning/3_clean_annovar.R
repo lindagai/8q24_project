@@ -8,7 +8,6 @@ filepath.annovar<-"/users/lgai/8q24_project/data/processed_data/annotation/fulla
 
 annovar<-read.table(filepath.annovar,sep="\t",quote ="",header=TRUE,stringsAsFactors=FALSE)
 
-#TODO: This could be a function?
 sm.annovar<-annovar %>%
   select("StartPosition",
          "EndPosition",
