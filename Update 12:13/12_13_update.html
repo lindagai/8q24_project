@@ -191,79 +191,46 @@ library(ggplot2)</code></pre>
 <h3>1. Filtered by functional annotation information (CADD &gt; 10, GWAVA &gt; 0.4, EIGEN &gt;4, using literature) using cut-offs (1048 SNPs)</h3>
 <div id="rvtdt" class="section level4">
 <h4>rvTDT</h4>
-<pre class="r"><code>summary(cars)</code></pre>
-<pre><code>##      speed           dist       
-##  Min.   : 4.0   Min.   :  2.00  
-##  1st Qu.:12.0   1st Qu.: 26.00  
-##  Median :15.0   Median : 36.00  
-##  Mean   :15.4   Mean   : 42.98  
-##  3rd Qu.:19.0   3rd Qu.: 56.00  
-##  Max.   :25.0   Max.   :120.00</code></pre>
-</div>
-<div id="rv-tdt" class="section level4">
-<h4>RV-TDT</h4>
-<pre class="r"><code>summary(cars)</code></pre>
-<pre><code>##      speed           dist       
-##  Min.   : 4.0   Min.   :  2.00  
-##  1st Qu.:12.0   1st Qu.: 26.00  
-##  Median :15.0   Median : 36.00  
-##  Mean   :15.4   Mean   : 42.98  
-##  3rd Qu.:19.0   3rd Qu.: 56.00  
-##  Max.   :25.0   Max.   :120.00</code></pre>
-</div>
-<div id="scantrio" class="section level4">
-<h4>ScanTrio</h4>
-<pre class="r"><code>summary(cars)</code></pre>
-<pre><code>##      speed           dist       
-##  Min.   : 4.0   Min.   :  2.00  
-##  1st Qu.:12.0   1st Qu.: 26.00  
-##  Median :15.0   Median : 36.00  
-##  Mean   :15.4   Mean   : 42.98  
-##  3rd Qu.:19.0   3rd Qu.: 56.00  
-##  Max.   :25.0   Max.   :120.00</code></pre>
+<pre class="r"><code>unlist(readRDS(rvTDT.results[1]))</code></pre>
+<pre><code>##      nsnptot      nfamily  nsnpcompute       p_lc_1     p_lc_maf 
+## 8.480000e+02 3.270000e+02 8.480000e+02 4.067433e-01 2.772739e-01 
+##      p_lc_pc        p_k_1      p_k_maf       p_k_pc 
+## 4.951113e-01 2.532555e-03 3.073901e-01 2.104510e-03</code></pre>
 </div>
 </div>
 <div id="filtered-to-peak-tdt-signal-679-snps" class="section level3">
 <h3>2. Filtered to peak TDT signal (679 SNPs)</h3>
 <div id="rvtdt-1" class="section level4">
 <h4>rvTDT</h4>
-<pre class="r"><code>summary(cars)</code></pre>
-<pre><code>##      speed           dist       
-##  Min.   : 4.0   Min.   :  2.00  
-##  1st Qu.:12.0   1st Qu.: 26.00  
-##  Median :15.0   Median : 36.00  
-##  Mean   :15.4   Mean   : 42.98  
-##  3rd Qu.:19.0   3rd Qu.: 56.00  
-##  Max.   :25.0   Max.   :120.00</code></pre>
-</div>
-<div id="rv-tdt-1" class="section level4">
-<h4>RV-TDT</h4>
-<pre class="r"><code>summary(cars)</code></pre>
-<pre><code>##      speed           dist       
-##  Min.   : 4.0   Min.   :  2.00  
-##  1st Qu.:12.0   1st Qu.: 26.00  
-##  Median :15.0   Median : 36.00  
-##  Mean   :15.4   Mean   : 42.98  
-##  3rd Qu.:19.0   3rd Qu.: 56.00  
-##  Max.   :25.0   Max.   :120.00</code></pre>
-</div>
-<div id="scantrio-1" class="section level4">
-<h4>ScanTrio</h4>
-<pre class="r"><code>summary(cars)</code></pre>
-<pre><code>##      speed           dist       
-##  Min.   : 4.0   Min.   :  2.00  
-##  1st Qu.:12.0   1st Qu.: 26.00  
-##  Median :15.0   Median : 36.00  
-##  Mean   :15.4   Mean   : 42.98  
-##  3rd Qu.:19.0   3rd Qu.: 56.00  
-##  Max.   :25.0   Max.   :120.00</code></pre>
-<p>Interpretation:</p>
+<pre class="r"><code>unlist(readRDS(rvTDT.results[2]))</code></pre>
+<pre><code>##      nsnptot      nfamily  nsnpcompute       p_lc_1     p_lc_maf 
+## 5.120000e+02 3.270000e+02 5.120000e+02 4.277440e-02 2.946868e-01 
+##      p_lc_pc        p_k_1      p_k_maf       p_k_pc 
+## 1.627101e-01 2.272553e-05 6.763234e-02 0.000000e+00</code></pre>
 </div>
 </div>
 <div id="both-1-and-2-119-snps-1" class="section level3">
 <h3>3. Both 1 and 2 (119 SNPs)</h3>
 <div id="rvtdt-2" class="section level4">
 <h4>rvTDT</h4>
+<pre class="r"><code>unlist(readRDS(rvTDT.results[3]))</code></pre>
+<pre><code>##      nsnptot      nfamily  nsnpcompute       p_lc_1     p_lc_maf 
+## 1.020000e+02 3.270000e+02 1.020000e+02 5.976463e-02 9.973608e-01 
+##      p_lc_pc        p_k_1      p_k_maf       p_k_pc 
+## 1.469100e-01 2.381726e-04 8.929723e-02 7.197620e-06</code></pre>
+</div>
+<div id="rv-tdt" class="section level4">
+<h4>RV-TDT</h4>
+</div>
+<div id="scantrio" class="section level4">
+<h4>ScanTrio</h4>
+</div>
+<div id="rv-tdt-1" class="section level4">
+<h4>RV-TDT</h4>
+</div>
+<div id="scantrio-1" class="section level4">
+<h4>ScanTrio</h4>
+<p>Interpretation:</p>
 </div>
 <div id="rv-tdt-2" class="section level4">
 <h4>RV-TDT</h4>

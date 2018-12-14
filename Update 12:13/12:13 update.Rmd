@@ -35,7 +35,7 @@ TODO: filter to MAF cut-off to 0.05 or 0.01 (is MAF possibly captured in functio
 
 The ultimate goal was to run all 3 tests on the same datasets to compare results. Since rvTDT uses allele frequencies in the population to weight SNPs in the case-parent trios, I first filtered to all SNPs that had allele frequences in Europeans available from 1000Genomes from Aug 2015 (in the Annovar Report). I then created datasets with 3 different types of filters.
 
-### 1. Filtered by functional annotation information (1048 SNPs)
+### 1. Filtered by functional annotation information (848 SNPs)
 I filtered to SNPs with scores (in the ANNOVAR report) of CADD > 10, GWAVA > 0.4, EIGEN >4, using recommended cut-offs from literature, or, in the case of EIGEN, a cut-off used in at least one paper. I used these scores because the other annotation scores (SIFT, PolyPhen) were completely missing from the ANNOVAR report. Unfortunately, there was high degree of missingness in each of the scores, so this approach may have excluded some posibly causal SNPs if no annotation score was available for them.
 
 ```{r, echo=FALSE,message=FALSE,warning=FALSE}
@@ -59,7 +59,7 @@ ggplot(genotypic_tdt_results)+
        x="SNP position", y = "-logp")
 ```
 
-### 2. Filtered to region with peak TDT signal (679 SNPs)
+### 2. Filtered to region with peak TDT signal (512 SNPs)
 
 The positions that have been kept have been labeled red in the gTDT plot below.
 Score ranges for .
@@ -71,7 +71,7 @@ ggplot(genotypic_tdt_results)+
        x="SNP position", y = "-logp")
 ```
 
-### 3. Both 1 and 2 (119 SNPs)
+### 3. Both 1 and 2 (102 SNPs)
 
 The positions that have been kept have been labeled red in the gTDT plot below.
 
@@ -95,20 +95,39 @@ Is there correlation between high functional annotation scores and variant rarit
 
 ## Results
 ```{r,echo=FALSE}
-filepath.rvTDT.annotation<-"/users/lgai/8q24_project/data/processed_data/rvTDT/rvTDT_results_annotation.rds"
-filepath.rvTDT.peak<-"/users/lgai/8q24_project/data/processed_data/rvTDT/rvTDT_results_peak.rds"
-filepath.rvTDT.both<-"/users/lgai/8q24_project/data/processed_data/rvTDT/rvTDT_results_both.rds"
-rvTDT.results<-c(filepath.rvTDT.annotation,filepath.rvTDT.peak,filepath.rvTDT.both)
-```
 
-### 1. Filtered by functional annotation information (CADD > 10, GWAVA > 0.4, EIGEN >4, using literature) using cut-offs (1048 SNPs)
+filepath.rvTDT.annotation<-"/Users/lindagai 1/Documents/classes/4th year/Research/8q24_project/Update 12:13/rvTDT_results_annotation.rds"
+filepath.rvTDT.peak<-"/Users/lindagai 1/Documents/classes/4th year/Research/8q24_project/Update 12:13/rvTDT_results_peak.rds"
+filepath.rvTDT.both<-"/Users/lindagai 1/Documents/classes/4th year/Research/8q24_project/Update 12:13/rvTDT_results_both.rds"
+
+rvTDT.results<-c(filepath.rvTDT.annotation,filepath.rvTDT.peak,filepath.rvTDT.both)
+
+```
 
 #### rvTDT
 
+So far, I only have results for rvTDT. Generally, it seems like .
+
+#### 1. Filtered by functional annotation information (CADD > 10, GWAVA > 0.4, EIGEN >4, using literature) using cut-offs
+
+
 ```{r}
-readRDS(rvTDT.results[1])
+unlist(readRDS(rvTDT.results[1]))
 ```
 
+#### 2. Filtered to peak TDT signal
+
+
+```{r}
+unlist(readRDS(rvTDT.results[2]))
+```
+
+#### 3. Both 1 and 2
+
+
+```{r}
+unlist(readRDS(rvTDT.results[3]))
+```
 
 
 #### RV-TDT
@@ -126,14 +145,6 @@ readRDS(rvTDT.results[1])
 ```
 
 
-
-### 2. Filtered to peak TDT signal (679 SNPs)
-
-#### rvTDT
-
-```{r}
-readRDS(rvTDT.results[2])
-```
 
 #### RV-TDT
 
@@ -148,14 +159,6 @@ readRDS(rvTDT.results[2])
 ```
 
 Interpretation:
-
-### 3. Both 1 and 2 (119 SNPs)
-
-#### rvTDT
-
-```{r}
-readRDS(rvTDT.results[3])
-```
 
 #### RV-TDT
 
