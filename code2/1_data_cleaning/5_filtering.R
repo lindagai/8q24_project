@@ -15,18 +15,22 @@ library(VariantAnnotation)
 ###########################################
 
 get.subsetted.vcf<-function(filepath.annovar,filepath.vcf,filepath.filtered.vcf,hg.assembly){
+  filepath.annovar
   annovar<-read.table(filepath.annovar,sep="\t",header=TRUE, quote ="")
-  pos<-annovar.filt$StartPosition
-  
+  pos<-annovar$StartPosition
+    
   vcf <- readVcf(filepath.vcf,hg.assembly)
   geno(vcf)$GT<-apply(geno(vcf)$GT,2,function(x)gsub('\\|','/',x))
   geno(vcf)$GT<-apply(geno(vcf)$GT,2,function(x)gsub('1/0','0/1',x))
   vcf<-vcf[which(start(rowRanges(vcf)) %in% pos),]
+
   
   writeVcf(vcf,filepath.filtered.vcf)
 }
 
 get.geno<-function(filepath.ped,filepath.filtered.vcf,filepath.geno,hg.assembly){
+  filepath.ped
+  filepath.filtered.vcf
   vcf <- readVcf(filepath.filtered.vcf,hg.assembly)
   ped<-read.table(filepath.ped,header=TRUE)
   geno <- vcf2geno(vcf,ped)
@@ -73,7 +77,10 @@ annovar.filt.filepaths<-c(filepath.annovar.filt.annotation,filepath.annovar.filt
 #C. Filter vcf to these positions
 #TODO: Change this so it doesn't have to be unzipped
 
-#filepath.vcf<-"/users/lgai/8q24_project/data/processed_data/vcfs/8q24.cleaned.phased.vcf"
+#Cleaned phased vcf
+filepath.vcf<-"/users/lgai/8q24_project/data/processed_data/vcfs/8q24.cleaned.phased.vcf"
+
+#Filtered vcf
 filepath.filtered.vcf.annotation<-"/users/lgai/8q24_project/data/processed_data/vcfs/filtered_by_annotation/8q24.cleaned.phased.filtered.annotation.vcf"
 filepath.filtered.vcf.peak<-"/users/lgai/8q24_project/data/processed_data/vcfs/filtered_by_annotation/8q24.cleaned.phased.filtered.peak.vcf"
 filepath.filtered.vcf.both<-"/users/lgai/8q24_project/data/processed_data/vcfs/filtered_by_annotation/8q24.cleaned.phased.filtered.annotation.peak.vcf"
@@ -84,17 +91,19 @@ filtered.vcf.filepaths
 
 #C. Convert filtered, phased vcf to geno matrix
 
-#filepath.filtered.vcf<-"/users/lgai/8q24_project/data/processed_data/vcfs/filtered_by_annotation/8q24.cleaned.phased.annotation.filtered.vcf"
-#filepath.ped<-"/users/lgai/8q24_project/data/processed_data/gmkf_euro_completetrios_ids_match_vcf_mend_errors_removed.txt"
+filepath.ped<-"/users/lgai/8q24_project/data/processed_data/gmkf_euro_completetrios_ids_match_vcf_mend_errors_removed.txt"
+
 filepath.geno.annotation <- "/users/lgai/8q24_project/data/processed_data/geno_matrix/filtered/geno.phased.annotation.rds"
 filepath.geno.peak <-"/users/lgai/8q24_project/data/processed_data/geno_matrix/filtered/geno.phased.peak.rds"
 filepath.geno.both <-"/users/lgai/8q24_project/data/processed_data/geno_matrix/filtered/geno.phased.annotation.peak.rds"
 
 filtered.geno.filepaths<-c(filepath.geno.annotation,filepath.geno.peak,filepath.geno.both)
 filtered.geno.filepaths
+
 hg.assembly<-"hg19"
 
 #Obtain the filtered vcfs and geno matrices
+i<-1
 
 for (i in 1:3){
   filepath.annovar<-annovar.filt.filepaths[i]
