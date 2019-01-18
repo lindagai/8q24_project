@@ -1,6 +1,6 @@
 #ScanTrio functions, should go in a separate file
-
 myScanTrioEither<-function(window, tGR){
+  #Calculates LR for a transGR object
   tOL<-findOverlaps(tGR, window)
   tOL
   
@@ -25,8 +25,11 @@ myScanTrioEither<-function(window, tGR){
                                                      n)) + (n.out - y.out) * log((1 - p.out)/(1 - n))
   lr <- exp(loglr)
   
+  #Get window from the unique subject hits in the transmitted overlap?
   windowSub<-window[unique(subjectHits(tOL))]
   meta <- values(windowSub)
+  
+  #Return the meta-data, which is a dataframe that includes the metadata and the LR
   meta2 <- DataFrame(meta, lr = lr, minor.in = as.integer(minor.in), 
                      major.in = as.integer(major.in), minor.out = as.integer(minor.out), 
                      major.out = as.integer(major.out), mendel.in = NA, 

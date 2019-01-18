@@ -42,6 +42,8 @@ get.geno<-function(filepath.ped,filepath.filtered.vcf,filepath.geno,hg.assembly)
 
 ###########################################
 
+
+
 ################# Choose filtering #########################
 
 #TODO: Add in more functions

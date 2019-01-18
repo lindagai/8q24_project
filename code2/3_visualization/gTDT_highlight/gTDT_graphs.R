@@ -81,9 +81,10 @@ overlap.pos
 
 genotypic_tdt_results <- genotypic_tdt_results %>%
   mutate(overlap.pos = (snp_name %in% overlap.pos))
+unique(genotypic_tdt_results$overlap.pos)
 
 ggplot(genotypic_tdt_results)+
-  geom_point(aes(x=position,y=neglogp,color=overlap.pos$snp)) +
+  geom_point(aes(x=position,y=neglogp,color=overlap.pos)) +
   labs(title="Genotypic TDT results, positions in low-p-value 10 overlap data in green",
        x="SNP position", y = "-logp")
 
@@ -98,11 +99,11 @@ colnames(no.overlap.pos)<-"snp"
 no.overlap.pos
 
 genotypic_tdt_results <- genotypic_tdt_results %>%
-  mutate(no.overlap.pos = (snp_name %in% overlap.pos$snp))
-unique(genotypic_tdt_results$overlap.pos)
+  mutate(no.overlap.pos = (snp_name %in% no.overlap.pos))
+unique(genotypic_tdt_results$no.overlap.pos)
 
 ggplot(genotypic_tdt_results)+
-  geom_point(aes(x=position,y=neglogp,color=overlap.pos$snp)) +
+  geom_point(aes(x=position,y=neglogp,color=overlap.pos)) +
   labs(title="Genotypic TDT results, positions in low-p-value no overlap data in green",
        x="SNP position", y = "-logp")
 unique(genotypic_tdt_results$no.overlap.pos)

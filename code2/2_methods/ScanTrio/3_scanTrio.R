@@ -22,7 +22,6 @@ if (windowType == "M"){
   window<-GRanges(seqnames=currChr, ranges=IRanges(start=start(tGR)[rareIdx[1:(length(rareIdx)-windowSz+1)]], end=start(tGR[rareIdx[windowSz:length(rareIdx)]])))
 }
 
-
 stOutEither<-myScanTrioEither(window, tGR[rareIdx])
 
 #stPermOutTmpEither<-mclapply(permIdx, function(x) myScanTrioPermEither(window, tGR[rareIdx], permCtMin[rareIdx, x], permCtMaj[rareIdx, x]), mc.cores=nCores)

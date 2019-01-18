@@ -280,5 +280,21 @@ for (i in 1:2){
 The graphs of the 2 regions in 8q24 with the lowest p-values are given below:
 
 ```{r,echo=FALSE}
+filepath.10.overlap.map.6<-"/Users/lindagai 1/Documents/classes/4th year/Research/8q24_project/Update 12:13/cadd_10/window100_10_overlap/cadd_10_window-size=100_snps_6.map"
+overlap.map.6<-read.table(filepath.10.overlap.map.6,header=FALSE,stringsAsFactors = FALSE)
+head(overlap.map.6)
+filepath.10.overlap.map.7<-"/Users/lindagai 1/Documents/classes/4th year/Research/8q24_project/Update 12:13/cadd_10/window100_10_overlap/cadd_10_window-size=100_snps_7.map"
+overlap.map.7<-read.table(filepath.10.overlap.map.7,header=FALSE,stringsAsFactors = FALSE)
+overlap.map.7$V2
+overlap.pos<-unique(c(overlap.map.6$V2,overlap.map.7$V2))
+overlap.pos
 
+genotypic_tdt_results <- genotypic_tdt_results %>%
+  mutate(overlap.pos = (snp_name %in% overlap.pos))
+unique(genotypic_tdt_results$overlap.pos)
+
+ggplot(genotypic_tdt_results)+
+  geom_point(aes(x=position,y=neglogp,color=overlap.pos$snp)) +
+  labs(title="Genotypic TDT results, positions in low-p-value 10 overlap data in green",
+       x="SNP position", y = "-logp")
 ```
